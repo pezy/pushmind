@@ -13,16 +13,6 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Your awesome title
-email: your-email@example.com
-description: > # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
 
 # Build settings
 markdown: kramdown
@@ -52,6 +42,29 @@ title: "pezy's stack"
 title_separator: "|"
 name: "pezy"
 description: "push my mind to stack."
+url: "https://pushmind.org"
+reposiory: "pezy/pushmind"
+
+comments:
+    provider: "staticman"
+staticman:
+    allowedFields: ["name", "email", "url", "message"]
+    branch: "master"
+    commitMessage: "New comment."
+    filename: comment-{@timestamp}
+    format: "yml"
+    moderation: true
+    path: "_data/comments/{options.slug}"
+    requiredFields: ["name", "email", "message"]
+    transforms:
+        email: md5
+    generatedField:
+        date:
+            type: "date"
+            options:
+                format:"timestamp-seconds"
+
+og_image: /assets/images/site-logo.png
 
 # Outputting
 permalink: /:categories/:title/
@@ -113,6 +126,7 @@ author:
   bio: "Software engineer | C/C++ | Qt | Geophysics | Computer Graphics | Front-end | Python"
   location: "Beijing, China"
   stackoverflow: "1155235/pezy"
+  url: "https://pushmind.org"
 
 # Archives
 category_archive:
@@ -121,3 +135,8 @@ category_archive:
 tag_archive:
   type: liquid
   path: /tags/
+
+compress_html:
+    clippings: all
+    ignore:
+        envs: development
