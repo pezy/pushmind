@@ -57,12 +57,12 @@ staticman:
     path: "_data/comments/{options.slug}"
     requiredFields: ["name", "email", "message"]
     transforms:
-        email: md5
+        email: "md5"
     generatedField:
         date:
             type: "date"
             options:
-                format:"timestamp-seconds"
+                format: "timestamp-seconds"
 
 og_image: /assets/images/site-logo.png
 
