@@ -52,15 +52,15 @@ staticman:
     branch: "master"
     commitMessage: "New comment."
     filename: comment-{@timestamp}
-    format: "yml"
+    format: "yaml"
     moderation: true
     path: "_data/comments/{options.slug}"
     requiredFields: ["name", "email", "message"]
     transforms:
-        email: "md5"
-    generatedField:
+        email: md5
+    generatedFields:
         date:
-            type: "date"
+            type: date
             options:
                 format: "timestamp-seconds"
 
