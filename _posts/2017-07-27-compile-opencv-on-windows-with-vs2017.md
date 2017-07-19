@@ -4,8 +4,8 @@ date: 2017-07-27
 categories:
   - devops
 tags:
-  -opencv
-  -vs2017
+  - opencv
+  - vs2017
 ---
 
 最先开始考虑用 Qt 安装包自带的 mingw32 来编译, 结果发现满满都是坑, 譬如:
