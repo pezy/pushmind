@@ -1,11 +1,9 @@
 ---
+layout: post
 title: 浮点数转字符串后, 去掉多余的零
-date: 2016-04-25
-categories: 
-  - gist
-tags:
-  - cpp
-  - std::string
+categories: [gist]
+description: 譬如 xxx.0000 这种转为 xxx
+keywords: cpp, std::string
 ---
 
 当数据用于显示的时候, 经常会遇到这样类似的需求. 今天先用 C++ 给一个简单的实现:

@@ -1,10 +1,9 @@
 ---
+layout: post
 title: 给人读的设计模式
-date: 2017-07-31
-categories:
-  - dev
-tags:
-  - design patterns
+categories: [dev]
+description: 翻译加解读
+keywords: design patterns
 ---
 
 本文是针对 <https://github.com/kamranahmedse/design-patterns-for-humans> 的翻译与笔记, 会结合部分个人理解. 若您发现有明显理解有误的地方, 及疏漏之处, 麻烦留言指正, 在下不胜感激.

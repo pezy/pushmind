@@ -1,12 +1,9 @@
 ---
+layout: post
 title: 写在石头边上
-date: 2016-05-06
-categories:
-  - reading
-tags:
-  - 红楼梦
-  - 读书笔记
-  - 软件开发
+categories: [reading]
+description: 记不得第几次读红楼了
+keywords: 红楼梦, 读书笔记, 软件开发
 ---
 
 红楼梦读书笔记。

@@ -1,12 +1,9 @@
 ---
+layout: post
 title: Building OSG(OpenSceneGraph) at CentOS7
-date: 2016-07-19
-categories:
-  - dev
-tags:
-  - osg
-  - build
-  - CentOS
+categories: [dev]
+description: 记录在 linux 上编译 OSG 的命令行
+keywords: osg, build, CentOS
 ---
 
 Prepare dependence environment

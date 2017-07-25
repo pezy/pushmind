@@ -1,11 +1,9 @@
 ---
+layout: post
 title: 比例尺的绘制思路
-date: 2016-05-10
-categories:
-  - dev
-tags:
-  - GUI
-  - basemap
+categories: [dev]
+description: 工作需求分析日志
+keywords: GUI, basemap
 ---
 
 一般来说, 地图上常见的比例尺有三种表现形式, 如下图所示:

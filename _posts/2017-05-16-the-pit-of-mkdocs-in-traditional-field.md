@@ -1,12 +1,9 @@
 ---
+layout: post
 title: Mkdocs 在传统领域遇到的坑
-date: 2017-05-16
-categories:
-  - devops
-tags:
-  - Mkdocs
-  - python
-  - 文档
+categories: [devops]
+description: 初次使用 Mkdocs 的体验与教训
+keywords: Mkdocs, python, 文档
 ---
 
 如果在 Google 中输入 "project documentation markdown" 这几个关键字, 排在第一位的就是 MkDocs.

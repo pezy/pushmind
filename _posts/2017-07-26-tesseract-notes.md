@@ -1,10 +1,9 @@
 ---
+layout: post
 title: Tesseract OCR 研究笔记
-date: 2017-07-26
-categories:
-  - cv
-tags:
-  - tesseract
+categories: [cv]
+description: Tesseract OCR 使用的经验总结
+keywords: tesseract
 ---
 
 在最近一个项目里, 初识 Tesseract OCR 的威力. 虽然项目已经有了初步成效, 但仍有两个目标在心中无法释怀:

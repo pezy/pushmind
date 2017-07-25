@@ -1,11 +1,9 @@
 ---
+layout: post
 title: 软件开发的围城
-date: 2016-04-13
-categories: 
-  - dev
-tags: 
-  - 软件开发
-  - 知乎
+categories: [dev]
+description: 针对知乎有趣文章的读后感
+keywords: 软件开发, 知乎
 ---
 
 今天看到知乎上一篇有趣的文章[《你要避免的软件开发模式》](http://zhuanlan.zhihu.com/p/20744178), 的确是非常生动, 不知道你看完后中了几枪呢?

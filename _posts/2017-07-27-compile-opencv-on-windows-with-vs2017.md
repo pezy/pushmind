@@ -1,11 +1,9 @@
 ---
+layout: post
 title: 在 Windows 用 VS2017 编译 OpenCV
-date: 2017-07-27
-categories:
-  - devops
-tags:
-  - opencv
-  - vs2017
+categories: [devops]
+description: 编译 OpenCV 的全攻略
+keywords: opencv, vs2017
 ---
 
 最先开始考虑用 Qt 安装包自带的 mingw32 来编译, 结果发现满满都是坑, 譬如:
