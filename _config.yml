@@ -24,6 +24,14 @@ plugins:
   - jekyll-gist
   - jemoji
 
+# mimic GitHub Pages with --safe
+whitelist:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
@@ -62,15 +70,16 @@ staticman:
         date:
             type: "date"
             options:
-                format: "iso8601"
+                format: "timestamp-seconds"
 
 og_image: /assets/images/site-logo.png
 
 # Outputting
 permalink: /:categories/:title/
 breadcrumbs: true
-paginate: 5
+paginate: 10
 paginate_path: /page:num/
+timezone: 'CN'
 
 # Reading Files
 include:
@@ -125,8 +134,25 @@ author:
   avatar: "/assets/avatar.png"
   bio: "Software engineer | C/C++ | Qt | Geophysics | Computer Graphics | Front-end | Python"
   location: "Beijing, China"
+  github: "pezy"
   stackoverflow: "1155235/pezy"
   url: "https://pushmind.org"
+
+# Markdown Processing
+kramdown:
+  input: GFM
+  hard_wrap: true
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quote: lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+
+# Sass/SCSS
+sass:
+  sass_dir: _sass
+  style: compressed
 
 # Archives
 category_archive:
