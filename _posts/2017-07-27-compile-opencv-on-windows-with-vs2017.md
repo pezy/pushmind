@@ -63,6 +63,10 @@ DOXYGEN_DOT_EXECUTABLE: D:/graphviz/bin/dot.exe
 DOXYGEN_EXECUTABLE: D:/doxygen/doxygen.exe
 ```
 
+文档的编译, 可能需要在 Visual Studio 2017 中单独对 `install_docs` project 进行编译.
+编译过程中如果遇到类似 `xxx.bbl: No such file or directory` 的 error, 那么应该是没
+安装 bibtax 造成的, 下载[MiKTex][4]并安装即可. 注意安装完最好重启 VS, 让环境变量生效.
+
 ## 安装
 
 使用 OpenCV, 与使用其他库完全一致, 就是需要头文件(.h)和库文件(.lib). 在 Visual Studio 2017 中
@@ -78,3 +82,4 @@ DOXYGEN_EXECUTABLE: D:/doxygen/doxygen.exe
 [1]: https://github.com/pezy/ReadingNotes/blob/master/learningOpenCV/01-Exercises.md
 [2]: http://www.doxygen.org/
 [3]: http://www.graphviz.org/
+[4]: https://miktex.org/
