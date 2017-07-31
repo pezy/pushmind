@@ -1,6 +1,6 @@
 ---
 title: 给人读的设计模式
-date: 2017-07-31 10:06:04
+date: 2017-07-31
 categories:
   - dev
 tags:
