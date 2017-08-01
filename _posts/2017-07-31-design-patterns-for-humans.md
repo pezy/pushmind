@@ -50,7 +50,7 @@ Wikipedia:
 - [简单工厂](#-简单工厂)
 - [工厂方法](#-工厂方法)
 - [抽象工厂](#-抽象工厂)
-- 生成器
+- [生成器](#-生成器)
 - 原型
 - 单例
 
@@ -167,28 +167,20 @@ protected:
     virtual IInterviewer* makeInterviewer() = 0;
 };
 
-class DevelopmentManager : public HiringManager
-{
+template <typename Interviewer>
+class OtherManager : public HiringManager {
 protected:
-    IInterviewer* makeInterviewer() {
-        return new Developer();
-    }
-};
-
-class MarketingManager : public HiringManager
-{
-protected:
-    IInterviewer* makeInterviewer() {
-        return new CommunityExecutive();
+    IInterviewer* makeInterviewer() override {
+        return new Interviewer();
     }
 };
 
 int main()
 {
-    HiringManager* devManager = new DevelopmentManager();
+    HiringManager* devManager = new OtherManager<Developer>();
     devManager->takeInterview();
 
-    HiringManager* marketingManager = new MarketingManager();
+    HiringManager* marketingManager = new OtherManager<CommunityExecutive>();
     marketingManager->takeInterview();
 }
 ```
@@ -329,3 +321,80 @@ int main()
 依然可以用维度来理解抽象工厂. 抽象工厂比工厂方法又多了一维. 我们再把三个工厂理一遍: 简单工厂, 是针对一种"类型"的抽象; 工厂方法, 是针对一种"类型", 以及一种"创建方法"的抽象; 抽象工厂, 是针对**一组**"类型"与"创建方法"的抽象, 组内每一套类型与创建方法一一对应. 用造门这个例子来说: 简单工厂, 是封装了"造门"的操作, 输出的是一种门; 工厂方法, 是封装了"多种造门"的操作, 并委托"多家工厂", 输出的是"各种门". 抽象工厂, 是封装了"多种造门"的操作, "提供多种专业人员"的操作, 并委托给"多家工厂", 输出的是"各种门", 以及"各种专业人员", 且"门"与"专业人员"一一对应.
 
 例子中, 抽象工厂提供了两套"类型 - 创建操作"(分别是"门 - 造门", "专业人员 - 提供专业人员"), 其实这个个数是无限的. 你可以提供 n 套这样的对应关系. 然后委托给相关的工厂. 这就是"工厂们的工厂"的具体含义.
+
+### 👷 生成器
+
+真实案例:
+
+> 假设你在哈迪斯(美国连锁快餐集团), 正想下单. 如果你说, 要一个 "大哈迪", 他们很快就能交给你, 而不多问一句. 这是简单工厂的例子. 但, 当创建逻辑涉及更多步骤时, 譬如, 你在 Subway 买汉堡, 那么你可能需要做出更多选择, 想要哪种面包? 哪种酱汁? 哪种奶酪? 这种情况下, 就需要用到生成器模式了.
+
+大白话:
+
+> 允许你创建不同风格的对象, 同时避免构造器污染. 当对象有好几种口味的时候尤其有用. 或者是创建对象的过程涉及很多步骤时.
+
+Wikipedia:
+
+> The builder pattern is an object creation software design pattern with the intentions of finding a solution to the telescoping constructor anti-pattern.
+
+简单说下"the telescoping constructor anti-pattern"(可伸缩构造器的反模式)是什么. 你总会看到下面这种构造函数:
+
+```cpp
+Burger(int size, bool cheese = true, bool peperoni = true, bool tomato = false, bool lettuce = true);
+```
+
+你应该已经察觉了, 构造函数的参数数量可能会迅速失控, 而且其参数安排会越来越难理解. 将来想要增加更多选项, 这个列表会一直增长下去. 这就被称为"the telescoping constructor anti-pattern"(可伸缩构造器的反模式).
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+
+class Burger {
+public:
+    class BurgerBuilder;
+    void showFlavors() {
+        std::cout << size_;
+        if (cheese_) std::cout << "-cheese";
+        if (peperoni_) std::cout << "-peperoni";
+        if (lettuce_) std::cout << "-lettuce";
+        if (tomato_) std::cout << "-tomato";
+        std::cout << std::endl;
+    }
+private:
+    Burger(int size): size_(size) {}
+
+    int size_ = 7;
+    bool cheese_ = false;
+    bool peperoni_ = false;
+    bool lettuce_ = false;
+    bool tomato_ = false;
+};
+
+class Burger::BurgerBuilder {
+public:
+    BurgerBuilder(int size) { burger_ = new Burger(size); }
+    BurgerBuilder& AddCheese() { burger_->cheese_ = true; return *this; }
+    BurgerBuilder& AddPepperoni() { burger_->peperoni_ = true; return *this; }
+    BurgerBuilder& AddLettuce() { burger_->lettuce_ = true; return *this; }
+    BurgerBuilder& AddTomato() { burger_->tomato_ = true; return *this; }
+    Burger* Build() { return burger_; }
+private:
+    Burger* burger_;
+};
+
+int main()
+{
+    Burger* burger = Burger::BurgerBuilder(14).AddPepperoni().AddLettuce().AddTomato().Build();
+    burger->showFlavors();
+}
+```
+
+上述代码与原文代码略有不同, 但表达的主旨, 以及最终用法完全一致. (额外添加了输出函数, 方便运行查看)
+
+**使用时机**:
+
+当对象拥有好几种口味, 且需要避免构造器伸缩时使用. 与工厂模式运用场景不同之处在于: 当创建过程仅仅一步到位, 使用工厂模式. 如果需要分步进行, 则考虑使用生成器模式.
+
+**本质**:
+
+生成器模式的本质, 就是将构造函数中的参数列表**方法化**. 长长的参数列表, 无论是面向对象还是函数式编程, 都是大忌. 该模式主要就是为了解决该问题. 函数式编程中对该问题的解决方式是: [柯里化](https://zh.wikipedia.org/wiki/%E6%9F%AF%E9%87%8C%E5%8C%96), 其本质与生成器模式是一样的.
