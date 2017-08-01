@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: http://pushmind.org
+url: https://pushmind.org
 date_format: "ordinal"
 title: 推思
 subtitle: "推动思考，更进一步"
