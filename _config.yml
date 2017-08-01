@@ -1,168 +1,107 @@
-# Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
-
-# Build settings
-markdown: kramdown
-theme: minimal-mistakes-jekyll
-plugins:
-  - jekyll-feed
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jemoji
-
-# mimic GitHub Pages with --safe
-whitelist:
-  - jekyll-paginate
-  - jekyll-sitemap
-  - jekyll-gist
-  - jekyll-feed
-  - jemoji
-
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
-
-# Site Setting
-locale: "zh-CN"
-title: "pezy's stack"
-title_separator: "|"
-name: "pezy"
-description: "push my mind to stack."
-url: "https://pushmind.org"
-repository: "pezy/pushmind"
-
-comments:
-    provider: "staticman"
-staticman:
-    allowedFields: ["name", "email", "url", "message"]
-    branch: "master"
-    commitMessage: "New comment."
-    filename: comment-{@timestamp}
-    format: "yml"
-    moderation: true
-    path: "_data/comments/{options.slug}"
-    requiredFields: ["name", "email", "message"]
-    transforms:
-        email: "md5"
-    generatedFields:
-        date:
-            type: "date"
-            options:
-                format: "timestamp-seconds"
-
-og_image: /assets/images/site-logo.png
-
-# Outputting
-permalink: /:categories/:title/
-breadcrumbs: true
-paginate: 10
-paginate_path: /page:num/
-timezone: 'CN'
-
-# Reading Files
-include:
-  - .htaccess
-  - _pages
-exclude:
-  - "*.sublime-project"
-  - "*.sublime-workspace"
-  - vendor
-  - .asset-cache
-  - .bundle
-  - .jekyll-assets-cache
-  - .sass-cache
-  - assets/js/plugins
-  - assets/js/_main.js
-  - assets/js/vendor
-  - Capfile
-  - CHANGELOG
-  - config
-  - Gemfile
-  - Gruntfile.js
-  - gulpfile.js
-  - LICENSE
-  - log
-  - node_modules
-  - package.json
-  - Rakefile
-  - README
-  - tmp
-keep_files:
-  - .git
-  - .svn
+# ---------------- #
+#   Main Configs   #
+# ---------------- #
+baseurl:
+url: http://pushmind.org
+date_format: "ordinal"
+title: 推思
+subtitle: "推动思考，更进一步"
+description: "pezy's blog"
+keywords: 推思, pezy, pushmind, chenpezy
+favicon: /favicon.ico
+timezone: Asia/Beijing
 encoding: "utf-8"
-markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+side_bar_repo_limit: 5
 
-defaults:
-  # _posts
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: single
-      read_time: true
-      author_profile: true
-      comments: true
-      share: true
-      related: true
+# ---------------- #
+#      Author      #
+# ---------------- #
+author: pezy
+organization: xyzGroup
+organization_url: 
+github_username: pezy
+location: Beijing, China
+email: mail@devnotes.org
 
-# Site Author
-author:
-  name: "pezy"
-  avatar: "/assets/avatar.png"
-  bio: "Software engineer | C/C++ | Qt | Geophysics | Computer Graphics | Front-end | Python"
-  location: "Beijing, China"
-  github: "pezy"
-  stackoverflow: "1155235/pezy"
-  url: "https://pushmind.org"
+# ---------------- #
+#    Navigation    #
+# ---------------- #
+navs:
+  -
+    href: /
+    label: 首页
 
-# Markdown Processing
+  -
+    href: /categories/
+    label: 分类
+
+  -
+    href: /wiki/
+    label: 维基
+
+  -
+    href: /links/
+    label: 链接
+
+  -
+    href: /about/
+    label: 关于
+
+# ---------------- #
+#       RSS        #
+# ---------------- #
+subscribe_rss: /feed.xml
+
+# ---------------- #
+#      Jekyll      #
+# ---------------- #
+markdown: kramdown
 kramdown:
-  input: GFM
-  hard_wrap: true
-  auto_ids: true
-  footnote_nr: 1
-  entity_output: as_char
-  toc_levels: 1..6
-  smart_quote: lsquo,rsquo,ldquo,rdquo
-  enable_coderay: false
+    input: GFM
+highlighter: rouge
+paginate: 8
+lsi: false
+quiet: false
+excerpt_separator: "\n\n"
+permalink: /:year/:month/:day/:title/
+gems:
+    - jekyll-github-metadata
+    - rouge
+#     - jekyll-html-pipeline
+    - jekyll-paginate
+    - jekyll-sitemap
+    - jekyll-feed
+    - jemoji
+#     - jekyll-mentions
+collections:
+    wiki:
+        output: true
+        permalink: /wiki/:path/
 
-# Sass/SCSS
-sass:
-  sass_dir: _sass
-  style: compressed
+repository: pezy/mzlogin.github.io
 
-# Archives
-category_archive:
-  type: liquid
-  path: /categories/
-tag_archive:
-  type: liquid
-  path: /tags/
+# ---------------- #
+#      Comments    #
+# ---------------- #
+# support provider: disqus, gitment
+comments_provider: disqus
+# !!!重要!!! 请修改下面这些信息为你自己申请的
+# !!!Important!!! Please modify infos below to yours
+# https://disqus.com
+disqus:
+    username: chenpezy
+# https://imsun.net/posts/gitment-introduction/
+# gitment:
+#    owner: mzlogin
+#    repo: blog-comments
+#    oauth:
+#        client_id: d2e1cbbd298958076462
+#        client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
+# 在使用其它评论组件时可点击显示 Disqus
+lazy_load_disqus : true
 
-compress_html:
-    clippings: all
-    ignore:
-        envs: development
+# ---------------- #
+#    Analytics     #
+# ---------------- #
+google:
+    analytics_id: UA-103836910-1

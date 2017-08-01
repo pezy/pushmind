@@ -52,4 +52,4 @@ Exec=xxx - noload Welcome
 
 - Qt: XKEYBOARD extension not present on the X server.
 
-![xmanager_XDMCP_config]({{ site.url }}/assets/xmanager_XDMCP_config.png)
+![xmanager_XDMCP_config](/images/xmanager_XDMCP_config.png)
