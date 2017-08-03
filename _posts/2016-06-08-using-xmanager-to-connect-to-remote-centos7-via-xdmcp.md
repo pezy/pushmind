@@ -2,7 +2,7 @@
 layout: post
 title: Using Xmanager to connect to remote CentOS 7 via XDMCP
 categories: [devops]
- description: 用 Xmanager 通过 XDMCP 远程登陆 CentOS 7, 打不开 QtCreator 的解决方案  
+description: 用 Xmanager 通过 XDMCP 远程登陆 CentOS 7, 打不开 QtCreator 的解决方案  
 keywords: CentOS, Xmanager, XDMCP
 ---
 
