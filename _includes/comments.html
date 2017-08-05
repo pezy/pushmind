@@ -86,5 +86,100 @@
         })
         gitment.render('container')
         </script>
+    {% when 'staticman' %}
+        <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+        <section id="static-comments">
+          {% if site.repository and site.staticman.branch %}
+            <!-- Start static comments -->
+            <div class="gitment-container gitment-comments-container">
+              {% if site.data.comments[page.slug] %}
+                {% assign comments = site.data.comments[page.slug] | sort %}
+                <ul class="gitment-comments-list">
+                  {% for comment in comments %}
+                    <li class="gitment-comment">
+                      <a class="gitment-comment-avatar" href="{{ comment[1].url }}" target="_blank">
+                        <img class="gitment-comment-avatar-img" src="https://www.gravatar.com/avatar/{{ comment[1].email }}?d=mm&s=80">
+                      </a>
+                      <div class="gitment-comment-main">
+                        <div class="gitment-comment-header">
+                          <a class="gitment-comment-name" href="{{ comment[1].url }}" target="_blank">
+                            {{ comment[1].name }}
+                          </a>
+                          commented on
+                          <span class="comment__date">
+                            {% if comment[1].date %}
+                              {% if forloop.index %}<a href="#comment{{ forloop.index }}" itemprop="url">{% endif %}
+                              <time datetime="{{ comment[1].date | date_to_xmlschema }}" itemprop="datePublished">{{ comment[1].date | date: "%B %d, %Y at %I:%M %p" }}</time>
+                              {% if forloop.index %}</a>{% endif %}
+                            {% endif %}
+                          </span>
+                        </div>
+                        <div class="gitment-comment-body gitment-markdown">
+                          <p>{{ comment[1].message | markdownify }}</p>
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </div>
+            <!-- End static comments -->
+
+            <!-- Start new comment form -->
+            <p class="gitment-editor-footer-tip">电子邮件地址不会被公开。 必填项已用*标注</p>
+            <div class="gitment-container gitment-editor-container">
+            <form id="new_comment" method="post" action="https://api.staticman.net/v1/entry/{{ site.repository }}/{{ site.staticman.branch }}">
+              <div class="form__spinner">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <span class="sr-only">{{ site.data.ui-text[site.locale].loading_label | default: "Loading..." }}</span>
+              </div>
+              <fieldset>
+                <p> 姓名*: </p>
+                <input placeholder="Name*" type="text" id="comment-form-name" name="fields[name]" tabindex="2" />
+              </fieldset>
+              <fieldset>
+                <p> 电邮*: </p>
+                <input placeholder="Email address*" type="email" id="comment-form-email" name="fields[email]" tabindex="3" />
+              </fieldset>
+              <fieldset>
+                <p> 网址(可选): </p>
+                <input placeholder="Website (optional)" type="url" id="comment-form-url" name="fields[url]" tabindex="4"/>
+              </fieldset>
+              <p> 评论*: </p>
+              <div class="gitment-editor-avatar">
+                <svg class="gitment-github-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><path d="M25 10c-8.3 0-15 6.7-15 15 0 6.6 4.3 12.2 10.3 14.2.8.1 1-.3 1-.7v-2.6c-4.2.9-5.1-2-5.1-2-.7-1.7-1.7-2.2-1.7-2.2-1.4-.9.1-.9.1-.9 1.5.1 2.3 1.5 2.3 1.5 1.3 2.3 3.5 1.6 4.4 1.2.1-1 .5-1.6 1-2-3.3-.4-6.8-1.7-6.8-7.4 0-1.6.6-3 1.5-4-.2-.4-.7-1.9.1-4 0 0 1.3-.4 4.1 1.5 1.2-.3 2.5-.5 3.8-.5 1.3 0 2.6.2 3.8.5 2.9-1.9 4.1-1.5 4.1-1.5.8 2.1.3 3.6.1 4 1 1 1.5 2.4 1.5 4 0 5.8-3.5 7-6.8 7.4.5.5 1 1.4 1 2.8v4.1c0 .4.3.9 1 .7 6-2 10.2-7.6 10.2-14.2C40 16.7 33.3 10 25 10z"></path></svg>
+              </div>
+              <div class="gitment-editor-main">
+                <fieldset>
+                  <div class="gitment-editor-body">
+                    <div class="gitment-editor-write-field">
+                      <textarea placeholder="Leave a comment*" type="text" rows="3" id="comment-form-message" name="fields[message]" tabindex="1"></textarea>
+                    </div>    
+                  </div>   
+                </fieldset>
+              </div>
+              <fieldset class="hidden" style="display: none;">
+                <input type="hidden" name="options[slug]" value="{{ page.slug }}">
+                <label for="comment-form-location">Not used. Leave blank if you are a human.</label>
+                <input type="text" id="comment-form-location" name="fields[hidden]" autocomplete="off"/>
+              </fieldset>
+              <div class="gitment-editor-footer">
+                <a class="gitment-editor-footer-tip" href="https://guides.github.com/features/mastering-markdown/" target="_blank">
+                  Styling with Markdown is supported
+                </a>
+                <!-- Start comment form alert messaging -->
+                <p class="hidden js-notice">
+                  <strong class="js-notice-text"></strong>
+                </p>
+                <!-- End comment form alert messaging -->
+                <fieldset>
+                  <button type="submit" id="comment-form-submit" tabindex="5" class="gitment-editor-submit">{{ site.data.ui-text[site.locale].comment_btn_submit | default: "Submit Comment" }}</button>
+                </fieldset>
+              </div>
+            </form>
+            </div>
+            <!-- End new comment form -->
+          {% endif %}
+        </section>
   {% endcase %}
 {% endif %}

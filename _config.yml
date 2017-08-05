@@ -83,13 +83,13 @@ repository: pezy/mzlogin.github.io
 # ---------------- #
 #      Comments    #
 # ---------------- #
-# support provider: disqus, gitment
-comments_provider: disqus
+# support provider: disqus, gitment, staticman
+comments_provider: staticman
 # !!!重要!!! 请修改下面这些信息为你自己申请的
 # !!!Important!!! Please modify infos below to yours
 # https://disqus.com
-disqus:
-    username: chenpezy
+#disqus:
+#    username: chenpezy
 # https://imsun.net/posts/gitment-introduction/
 # gitment:
 #    owner: mzlogin
@@ -98,6 +98,23 @@ disqus:
 #        client_id: d2e1cbbd298958076462
 #        client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
 # 在使用其它评论组件时可点击显示 Disqus
+staticman:
+  allowedFields: ['name', 'email', 'url', 'message']
+  branch: "master"
+  commitMessage: "New comment."
+  filename: comment-{@timestamp}
+  format: "yml"
+  moderation: true
+  path: "_data/comments/{options.slug}"
+  requiredFields: ['name', 'email', 'message']
+  transforms:
+    email: "md5"
+  generateFields:
+    date:
+      type: "date"
+      options:
+        format: "timestamp-seconds"
+
 lazy_load_disqus : true
 
 # ---------------- #
