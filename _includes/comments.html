@@ -131,15 +131,15 @@
             <form id="new_comment" class="page__comments-form js-form form" method="post" action="https://api.staticman.net/v1/entry/{{ site.repository }}/{{ site.staticman.branch }}">
               <fieldset>
                 <p> 姓名*: </p>
-                <input placeholder="Name*" type="text" id="comment-form-name" name="fields[name]" tabindex="2" />
+                <input placeholder="Name*" type="text" id="comment-form-name" name="fields[name]" tabindex="1" />
               </fieldset>
               <fieldset>
                 <p> 电邮*: </p>
-                <input placeholder="Email address*" type="email" id="comment-form-email" name="fields[email]" tabindex="3" />
+                <input placeholder="Email address*" type="email" id="comment-form-email" name="fields[email]" tabindex="2" />
               </fieldset>
               <fieldset>
                 <p> 网址(可选): </p>
-                <input placeholder="Website (optional)" type="url" id="comment-form-url" name="fields[url]" tabindex="4"/>
+                <input placeholder="Website (optional)" type="url" id="comment-form-url" name="fields[url]" tabindex="3"/>
               </fieldset>
               <p> 评论*: </p>
               <div class="gitment-editor-avatar">
@@ -149,7 +149,7 @@
                 <fieldset>
                   <div class="gitment-editor-body">
                     <div class="gitment-editor-write-field">
-                      <textarea placeholder="Leave a comment*" type="text" rows="3" id="comment-form-message" name="fields[message]" tabindex="1"></textarea>
+                      <textarea placeholder="Leave a comment*" type="text" rows="3" id="comment-form-message" name="fields[message]" tabindex="4"></textarea>
                     </div>    
                   </div>   
                 </fieldset>

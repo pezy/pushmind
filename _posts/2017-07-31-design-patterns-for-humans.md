@@ -889,3 +889,107 @@ int main()
 **本质**:
 
 同样很难称之为模式的模式. 用的依然是"多加一层"的思想, 通过封装的方式来实现. 多的这一层, 就是所谓的"外观"了.
+
+## 行为模式
+
+简言之:
+
+> 关注对象间的责任分配. 它们与结构模式最大的不同在于: 它们不仅仅指定结构, 还概述了结构之间**消息传递/通讯的模式**. 换句话说, 它们回答了"软件组件们的行为是如何运转的"这个问题.
+
+Wikipadia:
+
+> In software engineering, behavioral design patterns are design patterns that identify common communication patterns between objects and realize these patterns. By doing so, these patterns increase flexibility in carrying out this communication.
+
+- [责任链](#-责任链)
+- [命令](#-命令)
+- [迭代器](#-迭代器)
+- [中介者](#-中介者)
+- [备忘录](#-备忘录)
+- [观察者](#-观察者)
+- [访问者](#-访问者)
+- [策略](#-策略)
+- [状态](#-状态)
+- [模板方法](#-模板方法)
+
+### 🔗 责任链
+
+真实案例:
+
+> 假设, 您的账户里有三种付款方式可供选择(A, B 和 C). 但额度各不一样, A 有 100$, B 有 300$, C 有 1000$. 支付优先级顺序是从 A 到 C. 当您尝试购买价格为 210$ 的东西时, 用责任链来处理, 会先去看 A 方式可否搞定, 如果搞不定, 就再去用 B, 如果依然搞不定, 再去用 C. 直到找到合适的方式. 这里的 A, B 和 C 构成的链条, 以及这样的现象就是责任链.
+
+简言之:
+
+> 它有助于建立一条对象链. 请求会从一端开始, 依次访问对象, 直到找到合适的处理程序.
+
+Wikipedia:
+
+> In object-oriented design, the chain-of-responsibility pattern is a design pattern consisting of a source of command objects and a series of processing objects. Each processing object contains logic that defines the types of command objects that it can handle; the rest are passed to the next processing object in the chain.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <exception>
+#include <string>
+
+class Account {
+public:
+    Account(float balance) : balance_(balance) {}
+    virtual std::string GetClassName() { return "Account"; }
+    void SetNext(Account* const account) { successor_ = account; }
+    bool CanPay(float amount) { return balance_ >= amount; }
+    void Pay(float amountToPay) {
+        if (CanPay(amountToPay)) {
+            std::cout << "Paid " << amountToPay << " using " << GetClassName() << std::endl;
+        } else if (successor_) {
+            std::cout << "Cannot pay using " << GetClassName() << ". Proceeding..." << std::endl;
+            successor_->Pay(amountToPay);
+        } else {
+            throw "None of the accounts have enough balance.";
+        }
+    }
+protected:
+    Account* successor_ = nullptr;
+    float balance_;
+};
+
+class Bank : public Account {
+public:
+    Bank(float balance) : Account(balance) {}
+    std::string GetClassName() override { return "Bank"; }
+};
+
+class Paypal : public Account {
+public:
+    Paypal(float balance) : Account(balance) {}
+    std::string GetClassName() override { return "Paypal"; }
+};
+
+class Bitcoin : public Account {
+public:
+    Bitcoin(float balance) : Account(balance) {}
+    std::string GetClassName() override { return "Bitcoin"; }
+};
+
+int main()
+{
+    //! Let's prepare a chain like below:
+    //! bank -> paypal -> bitcoin
+    //! First priority bank
+    //!   If bank can't pay then paypal
+    //!   If paypal can't pay then bit coin
+
+    Bank bank(100); //> Bank with balance 100
+    Paypal paypal(200); //> Paypal with balance 200
+    Bitcoin bitcoin(300); //> Bitcoin with balance 300
+
+    bank.SetNext(&paypal);
+    paypal.SetNext(&bitcoin);
+
+    bank.Pay(259);
+}
+```
+
+**本质**:
+
+责任链的本质其实是对象的**单链表**实现 + 对单链表的**迭代**. 上述例子中, 我们的迭代其实是接近**递归**的形式. 如果我们将整个责任链以统一的借口(`Account`)存储在 `list` 或 `vector` 中, 然后用 for 循环来迭代访问. 也同样可称为责任链. 所以不要被名词吓唬住, 始终回归到最基本的思想, 以及最基本的数据结构与逻辑手段. 这样才可以灵活应用.
