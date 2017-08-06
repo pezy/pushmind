@@ -128,11 +128,7 @@
             <!-- Start new comment form -->
             <p class="gitment-editor-footer-tip">电子邮件地址不会被公开。 必填项已用*标注</p>
             <div class="gitment-container gitment-editor-container">
-            <form id="new_comment" method="post" action="https://api.staticman.net/v1/entry/{{ site.repository }}/{{ site.staticman.branch }}">
-              <div class="form__spinner">
-                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-                <span class="sr-only">{{ site.data.ui-text[site.locale].loading_label | default: "Loading..." }}</span>
-              </div>
+            <form id="new_comment" class="page__comments-form js-form form" method="post" action="https://api.staticman.net/v1/entry/{{ site.repository }}/{{ site.staticman.branch }}">
               <fieldset>
                 <p> 姓名*: </p>
                 <input placeholder="Name*" type="text" id="comment-form-name" name="fields[name]" tabindex="2" />
@@ -163,17 +159,17 @@
                 <label for="comment-form-location">Not used. Leave blank if you are a human.</label>
                 <input type="text" id="comment-form-location" name="fields[hidden]" autocomplete="off"/>
               </fieldset>
+              <!-- Start comment form alert messaging -->
+              <p class="hidden js-notice">
+                <strong class="js-notice-text"></strong>
+              </p>
               <div class="gitment-editor-footer">
-                <a class="gitment-editor-footer-tip" href="https://guides.github.com/features/mastering-markdown/" target="_blank">
-                  Styling with Markdown is supported
-                </a>
-                <!-- Start comment form alert messaging -->
-                <p class="hidden js-notice">
-                  <strong class="js-notice-text"></strong>
-                </p>
                 <!-- End comment form alert messaging -->
                 <fieldset>
-                  <button type="submit" id="comment-form-submit" tabindex="5" class="gitment-editor-submit">{{ site.data.ui-text[site.locale].comment_btn_submit | default: "Submit Comment" }}</button>
+                  <a class="gitment-editor-footer-tip" href="https://guides.github.com/features/mastering-markdown/" target="_blank">
+                    Styling with Markdown is supported
+                  </a>
+                  <button type="submit" id="comment-form-submit" tabindex="5" class="gitment-editor-submit">提交</button>
                 </fieldset>
               </div>
             </form>
