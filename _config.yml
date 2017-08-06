@@ -78,7 +78,7 @@ collections:
         output: true
         permalink: /wiki/:path/
 
-repository: pezy/mzlogin.github.io
+repository: pezy/pushmind
 
 # ---------------- #
 #      Comments    #
