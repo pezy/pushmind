@@ -993,3 +993,78 @@ int main()
 **本质**:
 
 责任链的本质其实是对象的**单链表**实现 + 对单链表的**迭代**. 上述例子中, 我们的迭代其实是接近**递归**的形式. 如果我们将整个责任链以统一的借口(`Account`)存储在 `list` 或 `vector` 中, 然后用 for 循环来迭代访问. 也同样可称为责任链. 所以不要被名词吓唬住, 始终回归到最基本的思想, 以及最基本的数据结构与逻辑手段. 这样才可以灵活应用.
+
+### 👮 命令
+
+真实案例:
+
+> 一个典型的例子是, 在饭馆点菜. 你(客户)要求服务员(调用者)上一些食物(命令), 然后服务员将命令简短的传达给厨师(接收者), 厨师拥有做菜的必要知识与技能. 另一个例子, 你(客户)用遥控器(调用者)来切换(命令)电视(接收者)节目.
+
+简言之:
+
+> 允许你将操作封装在对象中. 这种模式背后的核心思想是分离客户与接收者.
+
+Wikipadia:
+
+> In object-oriented programming, the command pattern is a behavioral design pattern in which an object is used to encapsulate all information needed to perform an action or trigger an event at a later time. This information includes the method name, the object that owns the method and values for the method parameters.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+
+class Bulb {
+  public:
+    void TurnOn() { std::cout << "Bulb has been lit" << std::endl; }
+    void TurnOff() { std::cout << "Darkness!" << std::endl; }
+};
+
+class ICommand {
+  public:
+    virtual void Execute() = 0;
+    virtual void Undo() = 0;
+    virtual void Redo() = 0;
+};
+
+class TurnOn : public ICommand {
+  public:
+    TurnOn(Bulb& bulb): bulb_(bulb) {}
+    void Execute() override { bulb_.TurnOn(); }
+    void Undo() override { bulb_.TurnOff(); }
+    void Redo() override { Execute(); }
+  private:
+    Bulb& bulb_;
+};
+
+class TurnOff : public ICommand {
+  public:
+    TurnOff(Bulb& bulb): bulb_(bulb) {}
+    void Execute() override { bulb_.TurnOff(); }
+    void Undo() override { bulb_.TurnOn(); }
+    void Redo() override { Execute(); }
+  private:
+    Bulb& bulb_;
+};
+
+class RemoteControl {
+  public:
+    void Submit(ICommand& command) { command.Execute(); }
+};
+
+int main()
+{
+  Bulb bulb;
+  TurnOn turnOn(bulb);
+  TurnOff turnOff(bulb);
+
+  RemoteControl remote;
+  remote.Submit(turnOn);
+  remote.Submit(turnOff);
+}
+```
+
+命令模式通常被用来实现交易基础系统, 当你执行一系列命令的同时维系一个历史记录. 如果最终命令执行成功就罢了, 若不成功, 将通过历史回溯, 来撤销这一系列命令.(这更像是一个原子命令的执行过程, 请见[ACID](https://en.wikipedia.org/wiki/ACID))
+
+**本质**:
+
+命令模式本质上, 是对消息协议的一种抽象. 就像举出的例子里, 提出要求的是客户, 执行要求的是厨师, 而连接两者的是服务员, 但真正连接者是消息的接口, 这个就是命令. 同样的, 电视机遥控器也是命令. 这个命令一定具备"简单", "高粒度"等特点. 通常在运用的时候, 会加上对这个命令的历史记录与回溯. 也就是示例代码中的那三个基本接口: `execute`, `undo`, `redo`. 值得注意的是, `execute` 一定是 ACID 的, 通常会是包含一系列命令的集合. 一旦有一个命令执行失败, 那么会整体回滚.
