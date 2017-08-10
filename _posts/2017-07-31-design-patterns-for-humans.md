@@ -1067,4 +1067,68 @@ int main()
 
 **本质**:
 
-命令模式本质上, 是对消息协议的一种抽象. 就像举出的例子里, 提出要求的是客户, 执行要求的是厨师, 而连接两者的是服务员, 但真正连接者是消息的接口, 这个就是命令. 同样的, 电视机遥控器也是命令. 这个命令一定具备"简单", "高粒度"等特点. 通常在运用的时候, 会加上对这个命令的历史记录与回溯. 也就是示例代码中的那三个基本接口: `execute`, `undo`, `redo`. 值得注意的是, `execute` 一定是 ACID 的, 通常会是包含一系列命令的集合. 一旦有一个命令执行失败, 那么会整体回滚.
+命令模式本质上, 是对**消息协议的一种抽象**, 而用的手法是**回调**. 就像举出的例子里, 提出要求的是客户, 执行要求的是厨师, 而连接两者的是服务员, 但真正连接者是消息的接口, 这个就是命令. 同样的, 电视机遥控器也是命令. 这个命令一定具备"简单", "高粒度"等特点. 通常在运用的时候, 会加上对这个命令的历史记录与回溯. 也就是示例代码中的那三个基本接口: `execute`, `undo`, `redo`. 值得注意的是, `execute` 一定是 ACID 的, 通常会是包含一系列命令的集合. 一旦有一个命令执行失败, 那么会整体回滚.
+
+### ➿ 迭代器
+
+真实案例:
+
+> 老式的收音机是迭代器的一个好例子, 用户可以从任意频道开始, 通过点击"下一个"或"上一个"按钮, 来浏览响应的频道. 也可以用 MP3 播放器和电视机来举例, 你同样可以通过"向前"和"向后"按钮来连续切换频道. 换句话说, 它们都提供了一个接口来遍历各个频道, 歌曲或电台.
+
+简言之:
+
+> 它呈现了一种访问对象元素, 却不暴露底层方法的方式.
+
+Wikipadia:
+
+> In object-oriented programming, the iterator pattern is a design pattern in which an iterator is used to traverse a container and access the container's elements. The iterator pattern decouples algorithms from containers; in some cases, algorithms are necessarily container-specific and thus cannot be decoupled.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class RadioStation {
+  friend bool operator==(const RadioStation& lhs, const RadioStation& rhs) { return lhs.frequency_ == rhs.frequency_; }
+public:
+  RadioStation(float frequency): frequency_(frequency) {}
+  float GetFrequency() const { return frequency_; }
+private:
+  float frequency_;
+};
+
+class StationList {
+  using Iter = std::vector<RadioStation>::iterator;
+public:
+  void AddStation(const RadioStation& station) { stations_.push_back(station); }
+  void RemoveStation(const RadioStation& toRemove) {
+    auto found = std::find(stations_.begin(), stations_.end(), toRemove);
+    if (found != stations_.end()) stations_.erase(found);
+  }
+  Iter begin() { return stations_.begin(); }
+  Iter end() { return stations_.end(); }
+private:
+  std::vector<RadioStation> stations_;
+};
+
+int main()
+{
+  StationList stationList;
+  stationList.AddStation(RadioStation(89));
+  stationList.AddStation(RadioStation(101));
+  stationList.AddStation(RadioStation(102));
+  stationList.AddStation(RadioStation(103.2));
+
+  for (auto&& station : stationList)
+    std::cout << station.GetFrequency() << std::endl;
+
+  stationList.RemoveStation(RadioStation(89)); // Will remove station 89
+}
+```
+
+**本质**:
+
+同样称不上模式的模式. 这里的迭代器与 C++ 中迭代器的概念完全相同. 我觉得是否将语言中本有的容器包装成对象, 要适当取舍. 切莫为了设计而设计. 就示例代码而言, `StationList` 对象完全多此一举, 裸用容器就可以解决. 在实际应用中, 除非为了接口上的统一, 而使用一个代理(`StationList` 就是一个代理类), 否则完全不用过度设计. 迭代器的本质, 就是迭代. 这是程序语言最基础的一环, 所谓迭代器模式, 仅仅是这一环在面向对象中的体现.
+ 
