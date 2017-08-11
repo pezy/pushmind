@@ -1131,4 +1131,300 @@ int main()
 **本质**:
 
 同样称不上模式的模式. 这里的迭代器与 C++ 中迭代器的概念完全相同. 我觉得是否将语言中本有的容器包装成对象, 要适当取舍. 切莫为了设计而设计. 就示例代码而言, `StationList` 对象完全多此一举, 裸用容器就可以解决. 在实际应用中, 除非为了接口上的统一, 而使用一个代理(`StationList` 就是一个代理类), 否则完全不用过度设计. 迭代器的本质, 就是迭代. 这是程序语言最基础的一环, 所谓迭代器模式, 仅仅是这一环在面向对象中的体现.
- 
+
+### 👽 中介者
+
+真实案例:
+
+> 典型案例是, 你通过手机给人打电话, 你和对方的通讯并非直接送达的, 而是需要通过中间的网络运营商. 这个案例中, 网络运营商就是中介者.
+
+简言之:
+
+> 中介者模式增加了一个第三方对象(中介者)来控制两个对象(同事)间的交互. 有助于对彼此通信的解耦, 毕竟他们并不需要关心对方的实现细节.
+
+Wikipedia:
+
+> In software engineering, the mediator pattern defines an object that encapsulates how a set of objects interact. This pattern is considered to be a behavioral pattern due to the way it can alter the program's running behavior.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <iomanip>
+
+class User;
+
+class IChatRoomMediator {
+public:
+    virtual void ShowMessage(const User& user, const std::string& message) = 0;
+};
+
+class ChatRoom : public IChatRoomMediator {
+public:
+    void ShowMessage(const User& user, const std::string& message) override;
+};
+
+class User {
+public:
+    User(const std::string& name, IChatRoomMediator& chatMediator): name_(name), chatMediator_(chatMediator) {}
+    const std::string& GetName() const { return name_; }
+    void Send(const std::string& message) { chatMediator_.ShowMessage(*this, message); }
+private:
+    std::string name_;
+    IChatRoomMediator& chatMediator_;
+};
+
+void ChatRoom::ShowMessage(const User &user, const std::string &message) {
+    std::time_t now = std::time(nullptr);
+    std::cout << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S") << "[" << user.GetName() << "]: " << message << std::endl;
+}
+
+int main()
+{
+    ChatRoom mediator;
+    User john("John Doe", mediator);
+    User jane("Jane Doe", mediator);
+    john.Send("Hi, there!");
+    jane.Send("Hey!");
+}
+```
+
+**本质**:
+
+中介者的本质, 也是对**消息协议的一种抽象**, 并同样借用了**回调**的手段. 听起来和[命令](#-命令)模式很类似, 其实也的确很类似. 区别仅在于业务场景的适应上: 命令模式适用于**多种**消息协议, 并将每一种都封装成对象, 是一种平铺式的抽象方式, 你通过多种命令, 来实现多种通讯; 中介者模式呢, 则固定为**某一种**消息协议, 同事之间要遵循相同的协议, 才可以做到通讯. 而这一种, 可以通过继承来具化, 所以是一种纵深式的抽象, 你和对方通讯, 可以是电话, 邮件, 微信等等, 但他们扮演的都是中介者这个角色.
+
+### 💾 备忘录
+
+真实案例:
+
+> 以计算器(原发器)为例, 当你做了一组运算后, 最后一次计算过程会保存在内存(备忘录)中. 所以你随时可以通过某个按钮(负责人)来恢复该操作.
+
+简言之:
+
+> 备忘录模式会抓取并储存对象的当前状态, 之后可便捷的恢复出来.
+
+Wikipedia:
+
+> The memento pattern is a software design pattern that provides the ability to restore an object to its previous state (undo via rollback).
+
+当你需要快照-恢复这样类似功能时, 该模式将会非常有用.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <memory>
+
+class EditorMemento {
+public:
+    EditorMemento(const std::string& content): content_(content) {}
+    const std::string& GetContent() const { return content_; }
+private:
+    std::string content_;
+};
+
+class Editor {
+    using MementoType = std::shared_ptr<EditorMemento>;
+public:
+    void Type(const std::string& words) { content_ += " " + words; }
+    const std::string& GetContent() const { return content_; }
+    MementoType Save() { return std::make_shared<EditorMemento>(content_); }
+    void Restore(MementoType memento) { content_ = memento->GetContent(); }
+private:
+    std::string content_;
+};
+
+int main()
+{
+    Editor editor;
+    //! Type some stuff
+    editor.Type("This is the first sentence.");
+    editor.Type("This is second.");
+    //! Save the state to restore to : This is the first sentence. This is second.
+    auto saved = editor.Save();
+    //! Type some more
+    editor.Type("And this is third.");
+    std::cout << editor.GetContent() << std::endl;
+    editor.Restore(saved);
+    std::cout << editor.GetContent() << std::endl;
+}
+```
+
+**本质**:
+
+备忘录模式, 说白了就是对**缓存**这个行为的对象化. 我们通常想缓存一个状态, 会把这个状态存到容器中(如哈希表, map等), 并用某个 key (如时间戳) 来标定. 但当你要实现的, 是一个颇具规模, 多种状态缓存, 以及各种"存-取"穿插的时候, 将状态抽象成一个对象, 就显得十分必要了. 磨刀不误砍柴工, 在特定的场景下, 该模式不是没事找事, 而是真的会简化业务逻辑.
+
+### 😎 观察者
+
+真实案例:
+
+> 一个好例子: 求职者订阅了某职位发布网站, 当有何时的职位出现时, 他们会收到通知.
+
+简言之:
+
+> 定义对象间的依赖关系, 以至于一个对象的状态改变, 依赖它的对象们都会收到通知.
+
+Wikipedia:
+
+> The observer pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+#include <functional>
+
+class JobPost {
+public:
+    JobPost(const std::string& title): title_(title) {}
+    const std::string& GetTitle() const { return title_; }
+private:
+    std::string title_;
+};
+
+class IObserver {
+public:
+    virtual void OnJobPosted(const JobPost& job) = 0;
+};
+
+class JobSeeker : public IObserver {
+public:
+    JobSeeker(const std::string& name): name_(name) {}
+    void OnJobPosted(const JobPost &job) override {
+        std::cout << "Hi " << name_ << "! New job posted: " << job.GetTitle() << std::endl;
+    }
+private:
+    std::string name_;
+};
+
+class IObservable {
+public:
+    virtual void Attach(IObserver& observer) = 0;
+    virtual void AddJob(const JobPost& jobPosting) = 0;
+protected:
+    virtual void Notify(const JobPost& jobPosting) = 0;
+};
+
+class JobPostings : public IObservable {
+public:
+    void Attach(IObserver& observer) override {
+        observers_.push_back(observer);
+    }
+    void AddJob(const JobPost &jobPosting) override {
+        Notify(jobPosting);
+    }
+private:
+    void Notify(const JobPost &jobPosting) override {
+        for (IObserver& observer : observers_)
+            observer.OnJobPosted(jobPosting);
+    }
+
+    std::vector<std::reference_wrapper<IObserver>> observers_;
+};
+
+int main()
+{
+    JobSeeker johnDoe("John Doe");
+    JobSeeker janeDoe("Jane Doe");
+
+    JobPostings jobPostings;
+    jobPostings.Attach(johnDoe);
+    jobPostings.Attach(janeDoe);
+
+    jobPostings.AddJob(JobPost("Software Engineer"));
+}
+```
+
+**本质**:
+
+又被称为发布-订阅模式. 但无论叫什么, 其实本质都是**注入+回调**. 订阅是注入的时机, 发布是回调的时机. 观察是注入的时机, 通知是回调的时机. 在实践中, 通常会维护一个订阅列表, 有点类似邮件列表. 发布通知时, 会迭代每一个注入对象, 并执行回调.
+
+### 🏃 访问者
+
+真实案例:
+
+> 假设有人要去迪拜, 他只需要一种方式(例如签证)进入迪拜. 到了之后, 就可以去访问迪拜的任何地方, 而用不着额外申请许可, 或是做一些法律事宜. 只需要让他知道一个地方, 他就可以去访问了. 访问者模式可以做到这一点, 它帮助你添加地点, 以便你无需额外工作就可以尽可能的访问更多地方.
+
+简言之:
+
+> 访问者模式允许你为对象们增加更多的操作, 却不必修改它们.
+
+Wikipedia:
+
+> In object-oriented programming and software engineering, the visitor design pattern is a way of separating an algorithm from an object structure on which it operates. A practical result of this separation is the ability to add new operations to existing object structures without modifying those structures. It is one way to follow the open/closed principle.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+
+class AnimalOperation;
+
+// visitee
+class Animal {
+public:
+    virtual void Accept(AnimalOperation& operation) = 0;
+};
+
+class Monkey;
+class Lion;
+class Dolphin;
+
+// visitor
+class AnimalOperation {
+public:
+    virtual void visitMonkey(Monkey& monkey) = 0;
+    virtual void visitLion(Lion& lion) = 0;
+    virtual void visitDolphin(Dolphin& dolphin) = 0;
+};
+
+class Monkey : public Animal {
+public:
+    void Shout() { std::cout << "Ooh oo aa aa!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitMonkey(*this); }
+};
+
+class Lion : public Animal {
+public:
+    void Roar() { std::cout << "Roaaar!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitLion(*this); }
+};
+
+class Dolphin : public Animal {
+public:
+    void Speak() { std::cout << "Tuut tuttu tuutt!" << std::endl; }
+    void Accept(AnimalOperation& operation) override { operation.visitDolphin(*this); }
+};
+
+class Speak : public AnimalOperation {
+public:
+    void visitMonkey(Monkey& monkey) override { monkey.Shout(); }
+    void visitLion(Lion& lion) override { lion.Roar(); }
+    void visitDolphin(Dolphin& dolphin) override { dolphin.Speak(); }
+};
+
+int main()
+{
+    Monkey monkey;
+    Lion lion;
+    Dolphin dolphin;
+
+    Speak speak;
+    monkey.Accept(speak);
+    lion.Accept(speak);
+    dolphin.Accept(speak);
+}
+```
+
+**本质**:
+
+其实本质依然是**注入-回调**模式. 签证是一种注入, 允许你回调 `visit`; 告诉地点是一种注入, 允许去具体地点回调 `visit`. 从示例代码看, 也能看出两层注入回调的意思: 首先是针对**接口**的注入回调, 通过 `Accept` 注入动物行为, 然后回调各个 `visit` 方法, 在回调的同时, 又将自身注入(此刻已经是针对**具体**对象了), 然后再回调具体的动物行为方法.
+
+为什么要这样绕来绕去, 来来回回的呢? 那是因为访问者是一种**维护**模式. 试想, 既有代码已经存在 Animal 和其三个派生类了, 以及各自嚎叫的方法. 现在我想用一个**统一的接口, 去迭代的调用这些方法**(假想三个对象都在一个 vector 中, 你迭代的时候无法用各自不同的接口). 那么就需要访问者上场了. 首先在 Animal 类中增加接口 `Accept`, 留出注入的口子. 然后派生类重写该接口, 并借此将自身注入. 最后将这些方法抽象成一个接口类, 并增加相应的 `visit` 方法. 派生该接口类, 将具体的方法一一绑定(就是在绑定回调). 然后我们一旦调用 `Accept`, 各自嚎叫的方法就会自然被回调到了.
+
+综上, 访问者模式, 是一种对**调用**的抽象, 依靠**回调**来实现.
