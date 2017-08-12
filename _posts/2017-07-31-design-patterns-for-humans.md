@@ -1428,3 +1428,102 @@ int main()
 为什么要这样绕来绕去, 来来回回的呢? 那是因为访问者是一种**维护**模式. 试想, 既有代码已经存在 Animal 和其三个派生类了, 以及各自嚎叫的方法. 现在我想用一个**统一的接口, 去迭代的调用这些方法**(假想三个对象都在一个 vector 中, 你迭代的时候无法用各自不同的接口). 那么就需要访问者上场了. 首先在 Animal 类中增加接口 `Accept`, 留出注入的口子. 然后派生类重写该接口, 并借此将自身注入. 最后将这些方法抽象成一个接口类, 并增加相应的 `visit` 方法. 派生该接口类, 将具体的方法一一绑定(就是在绑定回调). 然后我们一旦调用 `Accept`, 各自嚎叫的方法就会自然被回调到了.
 
 综上, 访问者模式, 是一种对**调用**的抽象, 依靠**回调**来实现.
+
+### 💡 策略
+
+真实案例:
+
+> 以排序算法为例, 最初我们采用冒泡排序, 但随着数据数量的增长, 冒泡排序越来越慢. 为了解决这个问题, 我们改用快速排序. 但虽然对于大型数据集来说效果好了起来, 但对于比较小的数据集而言, 却相当慢. 为了处理这样一个两难, 我们采取了一个策略: 对于小型数据集, 采用冒泡排序; 对于较大一些的, 采用快速排序.
+
+简言之:
+
+> 策略模式允许你根据实际情况切换算法或策略.
+
+Wikipadia:
+
+> In computer programming, the strategy pattern (also known as the policy pattern) is a behavioural software design pattern that enables an algorithm's behavior to be selected at runtime.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+class ISortStrategy {
+public:
+  virtual void Sort(std::vector<int>& vec) = 0;
+};
+
+class BubbleSortStrategy : public ISortStrategy {
+public:
+  void Sort(std::vector<int>& vec) override {
+    std::cout << "Sorting using bubble sort" << std::endl;
+    _BubbleSort(vec);
+  }
+private:
+  void _BubbleSort(std::vector<int>& vec) {
+      using size = std::vector<int>::size_type;
+      for (size i = 0; i != vec.size(); ++i)
+        for (size j = 0; j != vec.size()-1; ++j)
+          if (vec[j] > vec[j+1])
+            std::swap(vec[j], vec[j+1]);
+  }
+};
+
+class QuickSortStrategy : public ISortStrategy {
+public:
+  void Sort(std::vector<int>& vec) override {
+    std::cout << "Sorting using quick sort" << std::endl;
+    _QuickSort(vec);
+  }
+private:
+  void _QuickSort(std::vector<int>& vec) {
+    using size = std::vector<int>::size_type;
+    auto partition = [&vec](size low, size high) {
+      int pivot = vec[high], i = low;
+      for (size j = low; j != high; ++j)
+        if (vec[j] <= pivot)
+          std::swap(vec[i++], vec[j]);
+      std::swap(vec[i], vec[high]);
+      return i;
+    };
+
+    std::function<void (size, size)> quickSort = [&](size low, size high) {
+      if (low >= high) return;
+      size pi = partition(low, high);
+      quickSort(low, pi - 1);
+      quickSort(pi + 1, high);
+    };
+
+    quickSort(0, vec.size()-1);
+  }
+};
+
+class Sorter {
+public:
+  Sorter(ISortStrategy* sorter): sorter_(sorter) {}
+  void Sort(std::vector<int>& vec) { sorter_->Sort(vec); }
+private:
+  ISortStrategy* sorter_;
+};
+
+int main()
+{
+  std::vector<int> vec{1, 5, 4, 3, 2, 8};
+
+  Sorter sorter(new BubbleSortStrategy());
+  sorter.Sort(vec);
+  for (int i : vec) std::cout << i << " ";
+  std::cout << std::endl;
+
+  sorter = Sorter(new QuickSortStrategy());
+  sorter.Sort(vec);
+  for (int i : vec) std::cout << i << " ";
+  std::cout << std::endl;
+}
+```
+
+**本质**:
+
+策略模式的本质依然是**注入+多态**, 将接口注入, 调用相应方法(算法或策略)时, 再根据多态的特性来选择具体实现.
