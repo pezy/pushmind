@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 给人读的设计模式
+title: 写给人看的设计模式
 categories: [dev]
 description: 翻译加解读
 keywords: design patterns
@@ -12,7 +12,7 @@ keywords: design patterns
 >
 > Explain them in the simplest way possible. --- 作者的话
 
-## 🚀 初见
+## 🚀 初窥门径
 
 软工的江湖, 有一个原则贯穿始终, 有如剑道: DRY(don't repeat yourself). 无数先哲们, 想尽各种办法来解决这个终极问题. 所谓设计模式, 就是其中最著名的一个解决方案, 其作者有四位, ~号称"东邪, 西毒..."~. 而这种办法, 早已不是一招一式, 不是什么特定的类, 库, 代码, 你没法 include, import 一下就坐享其成. 这些方法被称之为 guidelines, 如果直译的话, 就是指导方针. 听起来比较虚一点, 但它们的确是针对具体问题的.
 
@@ -1449,81 +1449,234 @@ Wikipadia:
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <functional>
+#include <memory>
 
 class ISortStrategy {
 public:
-  virtual void Sort(std::vector<int>& vec) = 0;
+    virtual void Sort(std::vector<int>& vec) = 0;
 };
 
 class BubbleSortStrategy : public ISortStrategy {
 public:
-  void Sort(std::vector<int>& vec) override {
-    std::cout << "Sorting using bubble sort" << std::endl;
-    _BubbleSort(vec);
-  }
+    void Sort(std::vector<int>& vec) override {
+        std::cout << "Sorting using bubble sort" << std::endl;
+        _BubbleSort(vec);
+    }
 private:
-  void _BubbleSort(std::vector<int>& vec) {
-      using size = std::vector<int>::size_type;
-      for (size i = 0; i != vec.size(); ++i)
-        for (size j = 0; j != vec.size()-1; ++j)
-          if (vec[j] > vec[j+1])
-            std::swap(vec[j], vec[j+1]);
-  }
+    void _BubbleSort(std::vector<int>& vec) {
+        using size = std::vector<int>::size_type;
+        for (size i = 0; i != vec.size(); ++i)
+            for (size j = 0; j != vec.size()-1; ++j)
+                if (vec[j] > vec[j+1])
+                    std::swap(vec[j], vec[j+1]);
+    }
 };
 
 class QuickSortStrategy : public ISortStrategy {
 public:
-  void Sort(std::vector<int>& vec) override {
-    std::cout << "Sorting using quick sort" << std::endl;
-    _QuickSort(vec);
-  }
+    void Sort(std::vector<int>& vec) override {
+        std::cout << "Sorting using quick sort" << std::endl;
+        _QuickSort(vec);
+    }
 private:
-  void _QuickSort(std::vector<int>& vec) {
-    using size = std::vector<int>::size_type;
-    auto partition = [&vec](size low, size high) {
-      int pivot = vec[high], i = low;
-      for (size j = low; j != high; ++j)
-        if (vec[j] <= pivot)
-          std::swap(vec[i++], vec[j]);
-      std::swap(vec[i], vec[high]);
-      return i;
-    };
+    void _QuickSort(std::vector<int>& vec) {
+        using size = std::vector<int>::size_type;
+        auto partition = [&vec](size low, size high) {
+            int pivot = vec[high];
+            size i = low;
+            for (size j = low; j != high; ++j)
+                if (vec[j] <= pivot)
+                    std::swap(vec[i++], vec[j]);
+            std::swap(vec[i], vec[high]);
+            return i;
+        };
 
-    std::function<void (size, size)> quickSort = [&](size low, size high) {
-      if (low >= high) return;
-      size pi = partition(low, high);
-      quickSort(low, pi - 1);
-      quickSort(pi + 1, high);
-    };
+        std::function<void (size, size)> quickSort = [&](size low, size high) {
+            if (low >= high) return;
+            size pi = partition(low, high);
+            quickSort(low, pi - 1);
+            quickSort(pi + 1, high);
+        };
 
-    quickSort(0, vec.size()-1);
-  }
+        quickSort(0, vec.size()-1);
+    }
 };
 
 class Sorter {
 public:
-  Sorter(ISortStrategy* sorter): sorter_(sorter) {}
-  void Sort(std::vector<int>& vec) { sorter_->Sort(vec); }
-private:
-  ISortStrategy* sorter_;
+    static void Sort(std::vector<int>& vec, const std::shared_ptr<ISortStrategy>& sorter) { sorter->Sort(vec); }
 };
 
 int main()
 {
-  std::vector<int> vec{1, 5, 4, 3, 2, 8};
+    std::vector<int> vec{1, 5, 4, 3, 2, 8};
 
-  Sorter sorter(new BubbleSortStrategy());
-  sorter.Sort(vec);
-  for (int i : vec) std::cout << i << " ";
-  std::cout << std::endl;
+    Sorter::Sort(vec, std::make_shared<BubbleSortStrategy>());
+    for (int i : vec) std::cout << i << " ";
+    std::cout << std::endl;
 
-  sorter = Sorter(new QuickSortStrategy());
-  sorter.Sort(vec);
-  for (int i : vec) std::cout << i << " ";
-  std::cout << std::endl;
+    Sorter::Sort(vec, std::make_shared<QuickSortStrategy>());
+    for (int i : vec) std::cout << i << " ";
+    std::cout << std::endl;
 }
 ```
 
 **本质**:
 
 策略模式的本质依然是**注入+多态**, 将接口注入, 调用相应方法(算法或策略)时, 再根据多态的特性来选择具体实现.
+
+### 💢 状态
+
+真实案例:
+
+> 假设你正在使用"画图"程序, 选择了画笔工具来进行绘制. 画刷会根据你选择的颜色而改变其行为: 譬如你选择了红色, 它便会用红色来绘制; 如果选择了蓝色, 它将成为蓝色.
+
+简言之:
+
+> 它让你在状态改变的同时, 也改变类的行为
+
+Wikipedia:
+
+> The state pattern is a behavioral software design pattern that implements a state machine in an object-oriented way. With the state pattern, a state machine is implemented by implementing each individual state as a derived class of the state pattern interface, and implementing state transitions by invoking methods defined by the pattern's superclass. The state pattern can be interpreted as a strategy pattern which is able to switch the current strategy through invocations of methods defined in the pattern's interface.
+
+**示例代码**:
+
+以一个文字处理程序为例, 那些敲上去的字, 你可以改变它们的状态. 例如, 你选择了加粗, 后续的字都会是粗的, 同样的, 选择了斜体, 后续都会是斜体.
+
+```cpp
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <memory>
+
+class IWritingState {
+public:
+    virtual void Write(std::string words) = 0;
+};
+
+class UpperCase : public IWritingState {
+    void Write(std::string words) override {
+        std::transform(words.begin(), words.end(), words.begin(), ::toupper);
+        std::cout << words << std::endl;
+    }
+};
+
+class LowerCase : public IWritingState {
+    void Write(std::string words) override {
+        std::transform(words.begin(), words.end(), words.begin(), ::tolower);
+        std::cout << words << std::endl;
+    }
+};
+
+class Default : public IWritingState {
+    void Write(std::string words) override { std::cout << words << std::endl; }
+};
+
+class TextEditor {
+public:
+    TextEditor(const std::shared_ptr<IWritingState>& state): state_(state) {}
+    void SetState(const std::shared_ptr<IWritingState>& state) { state_ = state; }
+    void Type(std::string words) { state_->Write(words); }
+private:
+    std::shared_ptr<IWritingState> state_;
+};
+
+int main()
+{
+  TextEditor editor(std::make_shared<Default>());
+  editor.Type("First line");
+
+  editor.SetState(std::make_shared<UpperCase>());
+  editor.Type("Second line");
+  editor.Type("Third line");
+
+  editor.SetState(std::make_shared<LowerCase>());
+  editor.Type("Fourth line");
+  editor.Type("Fifth line");
+}
+```
+
+**本质**:
+
+状态模式的本质依然是**注入+多态**, 这和[策略](#-策略)如出一辙. 实际上在实践中, 这俩模式几乎一样. 只有一些微小的差别:
+
+1. 状态模式通常会缓存当前状态, 你可以通过 `get` 方法取得状态, 但策略模式通常不提供 `get` 方法.
+1. 状态模式会提供 `set` 方法替换状态, 但策略模式通常不提供 `set` 方法.(虽然可以用 assign constructor 起到同样效果)
+1. 策略对象通常作为参数传递给当前对象, 而状态通常由当前对象所创建.
+1. 策略是针对特定方法的, 而状态却是针对整个对象的.
+
+详见<https://stackoverflow.com/questions/1658192/what-is-the-difference-between-strategy-design-pattern-and-state-design-pattern>
+
+总体来讲, 状态更像是一组策略的集合. 改变对象状态, 会让对象的各种方法都有改变. 而策略往往只是针对某特定算法的.
+
+### 📒 模板方法
+
+真实案例:
+
+> 假设我们正在造房子, 其步骤看起来可能如下所示:
+>
+> 1. 建造地基
+> 1. 砌墙
+> 1. 建造屋顶
+> 1. 隔出楼层
+>
+> 这些步骤的顺序是固定的, 即在砌墙之前不能建造屋顶, 但每个步骤都可以修改完善, 譬如砌墙也可以由木头或聚酯, 石头来替代.
+
+简言之:
+
+> 模板方法定义了如何执行某种算法的框架, 但将具体实现延迟到子类.
+
+Wikipedia:
+
+> In software engineering, the template method pattern is a behavioral design pattern that defines the program skeleton of an algorithm in an operation, deferring some steps to subclasses. It lets one redefine certain steps of an algorithm without changing the algorithm's structure.
+
+**示例代码**:
+
+假设我们有一个构建工具来帮助我们测试, 检查, 构建, 生成构建报告(即代码覆盖报告, 检查结果报告等), 并将我们的应用部署到测试服务器上.
+
+```cpp
+#include <iostream>
+
+class Builder {
+public:
+    void Build() {
+        Test();
+        Lint();
+        Assemble();
+        Deploy();
+    }
+protected:
+    virtual void Test() = 0;
+    virtual void Lint() = 0;
+    virtual void Assemble() = 0;
+    virtual void Deploy() = 0;
+};
+
+class AndroidBuilder : public Builder {
+    void Test() override { std::cout << "Running android tests" << std::endl; }
+    void Lint() override { std::cout << "Linting the android code" << std::endl; }
+    void Assemble() override { std::cout << "Assembling the android build" << std::endl; }
+    void Deploy() override { std::cout << "Deploying android build to server" << std::endl; }
+};
+
+class IosBuilder : public Builder {
+    void Test() override { std::cout << "Running ios tests" << std::endl; }
+    void Lint() override { std::cout << "Linting the ios code" << std::endl; }
+    void Assemble() override { std::cout << "Assembling the ios build" << std::endl; }
+    void Deploy() override { std::cout << "Deploying ios build to server" << std::endl; }
+};
+
+int main()
+{
+    AndroidBuilder androidBuilder;
+    androidBuilder.Build();
+
+    IosBuilder iosBuilder;
+    iosBuilder.Build();
+}
+```
+
+**本质**:
+
+模板方法基本就是**多态**的集中体现. 只不过将所有多态方法集中到一个公共接口中. 不过模板方法的核心是, 通过这个统一接口, 确定各个具体接口方法的顺序, 以确立调用结构. 子类各自实现具体细节, 但行为, 结构依旧保持一致. 这就好比"C++ 标准"规定了语言的行为, 各家编译器去各自实现. 而最终, 只要你的代码遵循 C++ 标准, 原则上应该可以在各种编译器上得到一致的结果.
