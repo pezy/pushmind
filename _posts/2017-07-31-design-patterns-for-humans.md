@@ -890,6 +890,139 @@ int main()
 
 同样很难称之为模式的模式. 用的依然是"多加一层"的思想, 通过封装的方式来实现. 多的这一层, 就是所谓的"外观"了.
 
+### 🍃 享元
+
+真实案例:
+
+> 你有没有在摊位边喝现泡茶的体验? 他们经常除了你要求的这一杯外, 还额外沏更多的茶, 留给其他的潜在客户. 以此来节省资源, 包括热气, 火候等. 享元模式就是针对这一特点的: 共享.
+
+简言之:
+
+通常以最小的存储用量或计算成本为代价, 共享给尽可能多的相似对象.
+
+Wikipedia:
+
+> In computer programming, flyweight is a software design pattern. A flyweight is an object that minimizes memory use by sharing as much data as possible with other similar objects; it is a way to use objects in large numbers when a simple repeated representation would use an unacceptable amount of memory.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <string>
+#include <unordered_map>
+
+// Anything that will be cached is flyweight.
+// Types of tea here will be flyweights.
+class KarakTea {};
+
+class TeaMaker {
+public:
+    KarakTea* Make(const std::string& preference) {
+        if (availableTea_.find(preference) == availableTea_.end())
+            availableTea_.insert({preference, new KarakTea()});
+
+        return availableTea_.at(preference);
+    }
+
+private:
+    std::unordered_map<std::string, KarakTea*> availableTea_;
+};
+
+class TeaShop {
+public:
+    TeaShop(TeaMaker& teaMaker): teaMaker_(teaMaker) {}
+    void TakeOrder(const std::string& teaType, int table) {
+        orders_[table] = teaMaker_.Make(teaType);
+    }
+    void Serve() {
+        for(auto order : orders_)
+            std::cout << "Serving tea to table# " << order.first << std::endl;
+    }
+
+private:
+    std::unordered_map<int, KarakTea*> orders_;
+    TeaMaker& teaMaker_;
+};
+
+int main()
+{
+    TeaMaker teaMaker;
+    TeaShop shop(teaMaker);
+
+    shop.TakeOrder("less sugar", 1);
+    shop.TakeOrder("more milk", 2);
+    shop.TakeOrder("without sugar", 5);
+
+    shop.Serve();
+}
+```
+
+**本质**:
+
+享元模式的本质就是最基本的**缓存**思想, 无论是计算机体系结构中的 cache 还是操作系统中的 page table, 都是这种思想的体现. 在程序设计中, 实现这一思想, 最常用的数据结构就是哈希表. 如例子中所示. 其最简单的用法描述就是: key 存在了, 直接取走; 不存在, 创建一个. 以此节省重复的创建与冗余的空间.
+
+### 🎱 代理
+
+真实案例:
+
+> 你应该用过门禁卡开门吧? 其实有很多种方式来开门, 如用门禁卡, 或是输入安全密码等等. 门的主要功能本来只是"开", 而现在门禁系统就像是加之于门的代理, 使之拥有了更多的功能. 下面的示例代码会更好的阐述这一思路.
+
+简言之:
+
+> 使用代理模式, 一个类会表现出另一个类的功能.
+
+Wikipedia:
+
+> A proxy, in its most general form, is a class functioning as an interface to something else. A proxy is a wrapper or agent object that is being called by the client to access the real serving object behind the scenes. Use of the proxy can simply be forwarding to the real object, or can provide additional logic. In the proxy extra functionality can be provided, for example caching when operations on the real object are resource intensive, or checking preconditions before operations on the real object are invoked.
+
+**示例代码**:
+
+```cpp
+#include <iostream>
+#include <string>
+
+class IDoor {
+public:
+    virtual void Open() = 0;
+    virtual void Close() = 0;
+};
+
+class LabDoor : public IDoor {
+public:
+    void Open() override { std::cout << "Opening lab door" << std::endl; }
+    void Close() override { std::cout << "Closing the lab door" << std::endl; }
+};
+
+class Security {
+public:
+    Security(IDoor& door): door_(door) {}
+    bool Authenticate(const std::string& password) { return password == "$ecr@t"; }
+    void Open(const std::string& password) {
+        if (Authenticate(password)) door_.Open();
+        else std::cout << "Big no! It ain't possible." << std::endl;
+    }
+    void Close() { door_.Close(); }
+
+private:
+    IDoor& door_;
+};
+
+int main()
+{
+    LabDoor labDoor;
+    Security securityDoor(labDoor);
+    securityDoor.Open("invalid");
+    securityDoor.Open("$ecr@t");
+    securityDoor.Close();
+}
+```
+
+**本质**:
+
+依然体现了**加一层**的思想, 这与上面遇到的[适配器模式](#-适配器)和[外观模式](#-外观)都很类似. 这里我们先比较一下三者的差别: 适配器的目的很明确, 是为了适应已有接口, 出发点是兼容; 外观模式的目的是简化繁琐的接口, 出发点是封装; 而代理模式的目的是增加更多功能, 出发点也是兼容. 但代理模式的兼容, 与适配器有很大差别, 适配器是真的从接口上兼容, 继承同样的接口类, 实现父类的虚方法; 代理模式则不然, 它的兼容, 更像是一种**伪装**, 只是接口的名称保持一致, 但实际上并无多大关联. 譬如例子里, 以前你用门, 有 `Open` 和 `Close` 方法, 现在换成安全门了, 你依然习惯性的想用这两种方法. 然而安全门只是门的代理, 所以它的这两种同名方法, 其实是伪造给你看的, 与之前的方法并无接口上的兼容性.
+
+代理模式广泛使用在 API 设计中, 其核心是为了兼容用户习惯.
+
 ## 行为模式
 
 简言之:
