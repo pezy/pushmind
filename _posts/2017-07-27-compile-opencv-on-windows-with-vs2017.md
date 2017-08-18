@@ -59,6 +59,12 @@ DOXYGEN_EXECUTABLE: D:/doxygen/doxygen.exe
 
 文档的编译, 可能需要在 Visual Studio 2017 中单独对 `install_docs` project 进行编译. 编译过程中如果遇到类似 `xxx.bbl: No such file or directory` 的 error, 那么应该是没安装 bibtax 造成的, 下载[MiKTex][4]并安装即可. 注意安装完最好重启 VS, 让环境变量生效.
 
+建议把 [`opencv_contrib`](https://github.com/opencv/opencv_contrib) 一起编了, 需要指定一下其 modules 路径:
+
+```sh
+OPENCV_EXTRA_MODULES_PATH: C:/opencv/opencv_contrib/modules
+```
+
 ## 安装
 
 使用 OpenCV, 与使用其他库完全一致, 就是需要头文件(.h)和库文件(.lib). 在 Visual Studio 2017 中对 INSTALL project 单独编译, 即执行了安装任务.
