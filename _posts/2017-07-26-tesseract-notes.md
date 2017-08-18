@@ -13,6 +13,8 @@ keywords: tesseract
 
 对于第一个目标, 实际上是有私心的, 关于深度学习的了解总觉得流于泛泛, 停留在一些课程介绍的概念阶段. 这么优秀的一个库摆在面前, 不失为一个从实际角度探索深度学习的入口. 当然其内部的实现, 无论从算法角度, 还是编程技巧角度, 都是十分值得学习的.
 
+**备注**: 如何在 Windows 上通过 Visual Studio 2017 Win64 编译 Tesseract OCR, 请见: <https://github.com/tesseract-ocr/tesseract/wiki/Compiling#building-for-x64-platform>
+
 第二个目标, 实际是对项目要求的精益求精. 我觉得达到这个目标应该从两个方面入手:
 
 1. 好好研读其文档: <https://github.com/tesseract-ocr/tesseract/wiki>
