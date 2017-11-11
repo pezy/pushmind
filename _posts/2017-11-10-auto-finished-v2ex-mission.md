@@ -25,3 +25,9 @@ keywords: v2ex auto
 直接运行, 第一次会跳转到登录界面, 填写登录信息以及验证码. 然后再次运行一次, 就可以自动领取奖励了. 只要 cookies 持续时间够长, 每天点一下该脚本就可以了.
 
 虽然这本书越读越没劲, 但这个小练习还挺好玩, 以后可以开发更多类似的应用, 节约大家的时间.
+
+----
+
+注意, 执行该脚本, 还需要安装 [Chrome 浏览器的驱动](https://sites.google.com/a/chromium.org/chromedriver/home), 如果在 windows 上则下载 chromedriver_win32.zip, 加压后运行一下那个执行程序即可.
+
+另外, 第一次手动登录后, 等待一会, 浏览器会自动关闭, 同时当前目录下会产生一个 cookies.pkl. 再次启动一次即可.
