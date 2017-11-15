@@ -6,6 +6,8 @@ description: Intel AI conference
 keywords: AI, Intel
 ---
 
+简要记录一下大会见闻.
+
 - 上午百度分享了它们的分布式深度学习平台: [PaddlePaddle](http://www.paddlepaddle.org/). 应该算是国内稍微全面一点的框架了.
 - [Intel Nervana](https://www.intelnervana.com/) Intel 的人工智能处理器.
 - 科大讯飞分享了它们的人工智能平台: [讯飞开放平台](http://www.xfyun.cn/)
