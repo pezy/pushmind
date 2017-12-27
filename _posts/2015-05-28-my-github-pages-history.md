@@ -33,7 +33,7 @@ keywords: github pages, fontend, staticgen, lab
 1. 基于豆瓣读书的[读书笔记](http://lab.devnotes.org/reading)页面。
 1. 一个类似 [豆列](http://www.douban.com/doulist/) 和 [轻单](https://qdan.me/) 的网络资源聚合器：[List](http://lab.devnotes.org/list)。（类似 Hacker News 和 浏览器书签）
 1. 一个基于日历的[每日笔记](http://diary.devnotes.org)。（这个是 fork 自 [@joyeecheung](https://github.com/joyeecheung) 的 [diary](https://github.com/joyeecheung/diary)
-1. 自己用的[密码管理工具](http://password.devnotes.org)，详见[Password Generator](../2016-06-21-password-generator/)
+1. 自己用的[密码管理工具](http://password.devnotes.org)，详见[Password Generator]({% post_url 2016-06-21-password-generator %})
 1. 基于豆瓣电影的[当前热映电影](http://lab.devnotes.org/movie), 按照平均分从上到下排序，以方便想去看电影时，有一个快速的参考。
 1. [北京艺术表演票务地图](http://devnotes.org/beijing-art-map/)，数据来源于豆瓣同城。
 
