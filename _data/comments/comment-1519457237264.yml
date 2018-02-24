@@ -1,0 +1,9 @@
+_id: 24124110-1934-11e8-a313-257d004a4890
+name: pezy
+email: f880d5003adfa9894032df3a532690b3
+url: ''
+message: >-
+  评论信息不会立刻显示，它会以 Pull Request 的形式出现在 https://github.com/pezy/pushmind/pulls 中。待我
+  Merge 后显示在页面上。
+hidden: ''
+date: '2018-02-24T07:27:17.264Z'
